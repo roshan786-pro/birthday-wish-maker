@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Wish Maker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;color:#fff;overflow-x:hidden;background:linear-gradient(135deg,#12051f,#30104d,#16091f)}
+body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,rgba(255,105,180,.22),transparent 30%),radial-gradient(circle at 80% 80%,rgba(155,89,255,.22),transparent 30%);pointer-events:none}
+.container{width:min(900px,92%);margin:auto;position:relative;z-index:2}
+.card{margin:55px auto;padding:34px;border:1px solid rgba(255,255,255,.18);border-radius:28px;background:rgba(255,255,255,.09);backdrop-filter:blur(18px);box-shadow:0 25px 80px rgba(0,0,0,.35)}
+h1{text-align:center;font-size:clamp(32px,6vw,58px);margin-bottom:10px}
+.sub{text-align:center;opacity:.75;margin-bottom:30px}
+label{display:block;font-weight:700;margin:18px 0 8px}
+input,textarea,select{width:100%;padding:15px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.2);color:#fff;outline:none;font-size:16px}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.45)}
+textarea{min-height:130px;resize:vertical}
+select option{color:#111}
+button{width:100%;margin-top:25px;padding:16px;border:0;border-radius:15px;font-size:17px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,#ff5ca8,#9c6bff);color:#fff;box-shadow:0 12px 35px rgba(255,92,168,.25);transition:.2s}
+button:hover{transform:translateY(-2px)}
+#result{display:none;margin-top:25px;padding:18px;border-radius:15px;background:rgba(0,0,0,.2);word-break:break-all}
+a{color:#ffd2e8}
+.wish{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center}
+.wishbox{width:min(800px,94%);padding:45px 28px;border-radius:32px;background:rgba(255,255,255,.1);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.2);box-shadow:0 25px 90px rgba(0,0,0,.35)}
+.badge{font-size:15px;letter-spacing:3px;opacity:.8}
+.name{font-size:clamp(42px,10vw,90px);font-weight:900;margin:12px 0 25px;background:linear-gradient(90deg,#ffd1e5,#fff,#d9c9ff);-webkit-background-clip:text;color:transparent}
+.message{font-size:clamp(18px,3vw,25px);line-height:1.65;white-space:pre-wrap}
+.from{margin-top:28px;font-size:18px;opacity:.85}
+.footer{margin-top:35px;opacity:.55;font-size:14px}
+.hearts span{position:fixed;bottom:-30px;font-size:22px;animation:float 7s linear infinite;opacity:.65;z-index:1}
+@keyframes float{to{transform:translateY(-110vh) rotate(360deg);opacity:0}}
+.confetti{position:fixed;top:-20px;width:8px;height:14px;animation:fall 4s linear forwards;z-index:5}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.hidden{display:none!important}
+.small{font-size:13px;opacity:.55;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div id="creator" class="container">
+  <div class="card">
+    <h1>🎂 Birthday Wish Maker</h1>
+    <p class="sub">Create a beautiful private birthday link in seconds.</p>
+
+    <label for="birthdayName">Birthday Person Name</label>
+    <input id="birthdayName" type="text">
+
+    <label for="senderName">Sender Name</label>
+    <input id="senderName" type="text">
+
+    <label for="birthdayDate">Birthday Date</label>
+    <input id="birthdayDate" type="date">
+
+    <label for="theme">Theme</label>
+    <select id="theme">
+      <option value="pink">Pink Dream</option>
+      <option value="purple">Purple Night</option>
+      <option value="rose">Rose Glow</option>
+    </select>
+
+    <label for="message">Your Message</label>
+    <textarea id="message"></textarea>
+
+    <button onclick="generateWish()">✨ Generate Birthday Link</button>
+    <div id="result"></div>
+    <p class="small">The generated link contains the wish details so it can be shared directly.</p>
+  </div>
+</div>
+
+<div id="wish" class="wish hidden">
+  <div class="wishbox">
+    <div class="badge">✨ HAPPY BIRTHDAY ✨</div>
+    <div id="wishName" class="name"></div>
+    <div id="wishDate" class="small"></div>
+    <div id="wishMessage" class="message"></div>
+    <div id="wishFrom" class="from"></div>
+    <div class="footer">Made with ♡</div>
+    <button onclick="createAnother()">Create another wish</button>
+  </div>
+</div>
+
+<div class="hearts">
+  <span style="left:8%;animation-delay:0s">♡</span>
+  <span style="left:24%;animation-delay:2s">♥</span>
+  <span style="left:45%;animation-delay:4s">♡</span>
+  <span style="left:68%;animation-delay:1s">♥</span>
+  <span style="left:88%;animation-delay:3s">♡</span>
+</div>
+
+<script>
+function encode(data){
+  return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+}
+function decode(str){
+  return JSON.parse(decodeURIComponent(escape(atob(str))));
+}
+function generateWish(){
+  const birthdayName=document.getElementById('birthdayName').value.trim();
+  const senderName=document.getElementById('senderName').value.trim();
+  const birthdayDate=document.getElementById('birthdayDate').value;
+  const theme=document.getElementById('theme').value;
+  const message=document.getElementById('message').value.trim();
+
+  if(!birthdayName || !senderName || !message){
+    alert("Please fill Birthday Person Name, Sender Name and Message.");
+    return;
+  }
+
+  const data={birthdayName,senderName,birthdayDate,theme,message};
+  const link=location.href.split('#')[0]+'#wish='+encode(data);
+  const result=document.getElementById('result');
+  result.style.display='block';
+  result.innerHTML='<b>Your birthday link:</b><br><br><a href="'+link+'">'+link+'</a><br><br><button onclick="navigator.clipboard.writeText(\''+link.replace(/'/g,"\\'")+'\').then(()=>alert(\'Link copied! 💖\'))">Copy Link</button>';
+}
+function loadWish(){
+  if(!location.hash.startsWith('#wish=')) return;
+  try{
+    const data=decode(location.hash.substring(6));
+    document.getElementById('creator').classList.add('hidden');
+    document.getElementById('wish').classList.remove('hidden');
+    document.getElementById('wishName').textContent=data.birthdayName || '';
+    document.getElementById('wishMessage').textContent=data.message || '';
+    document.getElementById('wishFrom').textContent=data.senderName ? '— '+data.senderName+' ♡' : '';
+    if(data.birthdayDate){
+      const d=new Date(data.birthdayDate+'T00:00:00');
+      document.getElementById('wishDate').textContent=d.toLocaleDateString(undefined,{day:'numeric',month:'long'});
+    }
+    if(data.theme==='purple') document.body.style.background='linear-gradient(135deg,#090014,#25104d,#0c0520)';
+    if(data.theme==='rose') document.body.style.background='linear-gradient(135deg,#260914,#641c3b,#170817)';
+    confetti();
+  }catch(e){ console.error(e); }
+}
+function confetti(){
+  for(let i=0;i<70;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.animationDelay=Math.random()*2+'s';
+    c.style.transform='rotate('+Math.random()*360+'deg)';
+    c.style.background='hsl('+Math.random()*360+',90%,70%)';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5000);
+  }
+}
+function createAnother(){ location.href=location.href.split('#')[0]; }
+loadWish();
+</script>
+</body>
+</html>

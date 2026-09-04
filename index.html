@@ -1,150 +1,392 @@
-<!DOCTYPE html>
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Birthday Wish Maker</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Birthday Wish Maker 💗</title>
+<meta name="theme-color" content="#ff5aa8">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap');
+
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;color:#fff;overflow-x:hidden;background:linear-gradient(135deg,#12051f,#30104d,#16091f)}
-body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,rgba(255,105,180,.22),transparent 30%),radial-gradient(circle at 80% 80%,rgba(155,89,255,.22),transparent 30%);pointer-events:none}
-.container{width:min(900px,92%);margin:auto;position:relative;z-index:2}
-.card{margin:55px auto;padding:34px;border:1px solid rgba(255,255,255,.18);border-radius:28px;background:rgba(255,255,255,.09);backdrop-filter:blur(18px);box-shadow:0 25px 80px rgba(0,0,0,.35)}
-h1{text-align:center;font-size:clamp(32px,6vw,58px);margin-bottom:10px}
-.sub{text-align:center;opacity:.75;margin-bottom:30px}
-label{display:block;font-weight:700;margin:18px 0 8px}
-input,textarea,select{width:100%;padding:15px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.2);color:#fff;outline:none;font-size:16px}
-input::placeholder,textarea::placeholder{color:rgba(255,255,255,.45)}
-textarea{min-height:130px;resize:vertical}
-select option{color:#111}
-button{width:100%;margin-top:25px;padding:16px;border:0;border-radius:15px;font-size:17px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,#ff5ca8,#9c6bff);color:#fff;box-shadow:0 12px 35px rgba(255,92,168,.25);transition:.2s}
-button:hover{transform:translateY(-2px)}
-#result{display:none;margin-top:25px;padding:18px;border-radius:15px;background:rgba(0,0,0,.2);word-break:break-all}
-a{color:#ffd2e8}
-.wish{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px;text-align:center}
-.wishbox{width:min(800px,94%);padding:45px 28px;border-radius:32px;background:rgba(255,255,255,.1);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.2);box-shadow:0 25px 90px rgba(0,0,0,.35)}
-.badge{font-size:15px;letter-spacing:3px;opacity:.8}
-.name{font-size:clamp(42px,10vw,90px);font-weight:900;margin:12px 0 25px;background:linear-gradient(90deg,#ffd1e5,#fff,#d9c9ff);-webkit-background-clip:text;color:transparent}
-.message{font-size:clamp(18px,3vw,25px);line-height:1.65;white-space:pre-wrap}
-.from{margin-top:28px;font-size:18px;opacity:.85}
-.footer{margin-top:35px;opacity:.55;font-size:14px}
-.hearts span{position:fixed;bottom:-30px;font-size:22px;animation:float 7s linear infinite;opacity:.65;z-index:1}
-@keyframes float{to{transform:translateY(-110vh) rotate(360deg);opacity:0}}
-.confetti{position:fixed;top:-20px;width:8px;height:14px;animation:fall 4s linear forwards;z-index:5}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+:root{
+  --pink:#ff5ca8;--pink2:#ff8fc8;--purple:#9b6cff;
+  --ink:#351b35;--muted:#8d7187;--line:#f2dce9;--white:#fff;
+}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;font-family:"DM Sans",system-ui,sans-serif;color:var(--ink);
+  background:
+    radial-gradient(circle at 10% 10%,rgba(255,155,208,.45),transparent 30%),
+    radial-gradient(circle at 90% 15%,rgba(180,143,255,.32),transparent 30%),
+    linear-gradient(135deg,#fff5fb,#f9f2ff 55%,#fff8fc);
+  overflow-x:hidden;
+}
+body:before,body:after{content:"";position:fixed;border-radius:50%;filter:blur(2px);pointer-events:none;z-index:0}
+body:before{width:280px;height:280px;background:rgba(255,105,180,.12);left:-90px;bottom:5%}
+body:after{width:340px;height:340px;background:rgba(155,108,255,.10);right:-120px;top:35%}
+
+.container{width:min(920px,92%);margin:auto;position:relative;z-index:2}
+.creator{padding:48px 0 70px}
+.brand{text-align:center;margin-bottom:28px}
+.brand .mini{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border:1px solid #f2cce0;background:rgba(255,255,255,.72);border-radius:999px;color:#a04b78;font-size:13px;font-weight:700;box-shadow:0 8px 25px rgba(126,63,104,.07)}
+.brand h1{font-family:"Playfair Display",serif;font-size:clamp(42px,7vw,76px);line-height:.98;margin:18px 0 12px;letter-spacing:-2px;background:linear-gradient(90deg,#ff4f9c,#9c67ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand p{color:#8c7185;font-size:16px}
+
+.card{
+  background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.95);
+  border-radius:34px;padding:clamp(24px,5vw,46px);
+  box-shadow:0 30px 90px rgba(106,53,103,.13),0 5px 20px rgba(106,53,103,.05);
+  backdrop-filter:blur(18px);
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+.field{margin-bottom:20px}
+.full{grid-column:1/-1}
+label{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin:0 0 9px;color:#54364d}
+label span{font-size:16px}
+input,textarea,select{
+  width:100%;border:1.5px solid var(--line);background:#fffafc;color:var(--ink);
+  border-radius:16px;padding:15px 16px;font:inherit;font-size:15px;outline:none;
+  transition:.2s;box-shadow:inset 0 1px 2px rgba(85,39,70,.02);
+}
+input:focus,textarea:focus,select:focus{border-color:#eaa1c7;box-shadow:0 0 0 4px rgba(255,92,168,.09)}
+textarea{min-height:145px;resize:vertical;line-height:1.55}
+input::placeholder,textarea::placeholder{color:#bca7b5}
+select{appearance:auto}
+
+.theme-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.theme-option{position:relative}
+.theme-option input{position:absolute;opacity:0;pointer-events:none}
+.theme-option label{
+  margin:0;padding:13px 12px;border:1.5px solid var(--line);border-radius:14px;
+  cursor:pointer;justify-content:center;font-size:14px;background:#fff;
+}
+.theme-option input:checked+label{border-color:#ff76b5;background:#fff1f8;color:#c23b7c;box-shadow:0 5px 18px rgba(255,92,168,.12)}
+
+.photo-box{
+  border:1.5px dashed #e7bfd5;border-radius:18px;padding:20px;background:#fffafd;
+  text-align:center;cursor:pointer;transition:.2s
+}
+.photo-box:hover{border-color:#e58bb8;background:#fff6fb}
+.photo-box strong{display:block;margin-top:6px}
+.photo-box small{display:block;color:#a78d9f;margin-top:5px}
+#photos{display:none}
+.previews{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.preview{width:78px;height:78px;border-radius:14px;object-fit:cover;border:2px solid #fff;box-shadow:0 5px 15px rgba(0,0,0,.10)}
+
+.create{
+  width:100%;border:0;border-radius:18px;padding:17px 20px;margin-top:8px;
+  color:#fff;background:linear-gradient(100deg,#ff4f9e,#b16bff);
+  font:700 17px "DM Sans",sans-serif;cursor:pointer;
+  box-shadow:0 15px 30px rgba(215,75,158,.24);transition:.2s
+}
+.create:hover{transform:translateY(-2px);box-shadow:0 19px 35px rgba(215,75,158,.30)}
+.note{text-align:center;color:#a18b9a;font-size:12px;margin-top:13px}
+
+.result{display:none;margin-top:22px;padding:18px;border-radius:18px;background:#fff5fa;border:1px solid #f4d8e6}
+.result.show{display:block}
+.result-title{font-weight:800;color:#6a3655}
+.linkbox{margin:10px 0;padding:12px;background:#fff;border:1px solid #eed5e2;border-radius:12px;word-break:break-all;font-size:13px;color:#9b4c77}
+.copy{border:0;background:#3f2940;color:#fff;border-radius:11px;padding:10px 14px;font-weight:700;cursor:pointer}
+
 .hidden{display:none!important}
-.small{font-size:13px;opacity:.55;margin-top:10px}
+
+/* Wish screen */
+.wish-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:35px 16px;position:relative;z-index:2}
+.wish-card{
+  width:min(930px,96%);min-height:620px;border-radius:40px;padding:42px 28px 34px;
+  text-align:center;background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.96);
+  box-shadow:0 35px 110px rgba(85,42,85,.17);backdrop-filter:blur(20px);position:relative;overflow:hidden
+}
+.wish-card:before{content:"";position:absolute;width:430px;height:430px;border-radius:50%;background:rgba(255,129,191,.12);left:-170px;top:-210px}
+.wish-card:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:rgba(162,122,255,.11);right:-190px;bottom:-230px}
+.wish-content{position:relative;z-index:2}
+.envelope{
+  width:190px;height:125px;margin:10px auto 28px;position:relative;
+  background:linear-gradient(145deg,#ff67ad,#a967ff);border-radius:12px 12px 20px 20px;
+  box-shadow:0 20px 35px rgba(181,75,159,.22);display:flex;align-items:flex-end;justify-content:center
+}
+.envelope:before{
+  content:"";position:absolute;left:0;top:0;width:0;height:0;
+  border-left:95px solid transparent;border-right:95px solid transparent;border-top:72px solid #ffacd2;
+  transform-origin:top center
+}
+.envelope:after{
+  content:"💗";position:absolute;background:#fff;width:68px;height:68px;border-radius:50%;
+  display:grid;place-items:center;font-size:30px;bottom:-26px;box-shadow:0 10px 20px rgba(110,52,98,.13)
+}
+.badge{font-size:12px;letter-spacing:4px;font-weight:800;color:#b15b89}
+.wish-date{font-size:15px;color:#a47d96;margin:13px 0}
+.wish-name{
+  font-family:"Playfair Display",serif;font-size:clamp(45px,9vw,88px);line-height:1.03;
+  margin:8px 0 18px;background:linear-gradient(90deg,#ff4d9f,#9c67ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-2px
+}
+.wish-message{max-width:700px;margin:auto;font-size:clamp(17px,2.5vw,23px);line-height:1.75;white-space:pre-wrap;color:#553a50}
+.from{margin-top:24px;color:#90657f;font-size:16px}
+.gallery{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:28px auto 0}
+.gallery img{width:150px;height:150px;object-fit:cover;border-radius:20px;border:4px solid #fff;box-shadow:0 12px 30px rgba(71,35,68,.14)}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:32px}
+.actions button{border:0;border-radius:13px;padding:12px 17px;font:700 14px "DM Sans",sans-serif;cursor:pointer}
+.primary{background:#3f2940;color:#fff}
+.secondary{background:#fff;color:#68485d;border:1px solid #ead7e2!important}
+.footer{margin-top:28px;color:#b19aa9;font-size:12px}
+
+.float-heart{position:fixed;bottom:-30px;font-size:20px;opacity:.55;animation:rise linear forwards;z-index:1;pointer-events:none}
+@keyframes rise{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
+.confetti{position:fixed;top:-15px;width:8px;height:14px;border-radius:2px;z-index:20;animation:fall 3.8s linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.2}}
+
+@media(max-width:650px){
+  .creator{padding-top:28px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}
+  .wish-card{padding:30px 18px}.envelope{transform:scale(.86);margin-bottom:16px}
+  .gallery img{width:105px;height:105px}
+}
 </style>
 </head>
 <body>
 
-<div id="creator" class="container">
-  <div class="card">
-    <h1>🎂 Birthday Wish Maker</h1>
-    <p class="sub">Create a beautiful private birthday link in seconds.</p>
+<section id="creator" class="creator">
+  <div class="container">
+    <div class="brand">
+      <div class="mini">💌 PRIVATE BIRTHDAY SURPRISE</div>
+      <h1>Create Your Surprise 💗</h1>
+      <p>Make a beautiful birthday page and share it with someone special.</p>
+    </div>
 
-    <label for="birthdayName">Birthday Person Name</label>
-    <input id="birthdayName" type="text">
+    <div class="card">
+      <div class="form-grid">
+        <div class="field">
+          <label><span>💗</span> Name</label>
+          <input id="birthdayName" placeholder="Enter name..." maxlength="40">
+        </div>
 
-    <label for="senderName">Sender Name</label>
-    <input id="senderName" type="text">
+        <div class="field">
+          <label><span>✍️</span> Your name</label>
+          <input id="senderName" placeholder="Enter your name..." maxlength="40">
+        </div>
 
-    <label for="birthdayDate">Birthday Date</label>
-    <input id="birthdayDate" type="date">
+        <div class="field">
+          <label><span>🎂</span> Birthday</label>
+          <input id="birthdayDate" type="date">
+        </div>
 
-    <label for="theme">Theme</label>
-    <select id="theme">
-      <option value="pink">Pink Dream</option>
-      <option value="purple">Purple Night</option>
-      <option value="rose">Rose Glow</option>
-    </select>
+        <div class="field">
+          <label><span>✨</span> Theme</label>
+          <div class="theme-row">
+            <div class="theme-option">
+              <input type="radio" id="pink" name="theme" value="pink" checked>
+              <label for="pink">💗 Pink</label>
+            </div>
+            <div class="theme-option">
+              <input type="radio" id="purple" name="theme" value="purple">
+              <label for="purple">💜 Purple</label>
+            </div>
+            <div class="theme-option">
+              <input type="radio" id="dark" name="theme" value="dark">
+              <label for="dark">🌙 Dark</label>
+            </div>
+          </div>
+        </div>
 
-    <label for="message">Your Message</label>
-    <textarea id="message"></textarea>
+        <div class="field full">
+          <label><span>💌</span> Your message</label>
+          <textarea id="message" placeholder="Write something special..."></textarea>
+        </div>
 
-    <button onclick="generateWish()">✨ Generate Birthday Link</button>
-    <div id="result"></div>
-    <p class="small">The generated link contains the wish details so it can be shared directly.</p>
+        <div class="field full">
+          <label><span>📸</span> Photos</label>
+          <div class="photo-box" onclick="document.getElementById('photos').click()">
+            <div style="font-size:28px">＋</div>
+            <strong>Add photos</strong>
+            <small>Up to 3 photos • optional</small>
+          </div>
+          <input id="photos" type="file" accept="image/*" multiple>
+          <div id="previews" class="previews"></div>
+        </div>
+      </div>
+
+      <button class="create" onclick="generateWish()">✨ CREATE MY SURPRISE ✨</button>
+      <div class="note">Your details stay inside the generated link — no account needed.</div>
+
+      <div id="result" class="result">
+        <div class="result-title">🎀 Your surprise link is ready!</div>
+        <div id="linkText" class="linkbox"></div>
+        <button class="copy" onclick="copyLink()">Copy link 💗</button>
+      </div>
+    </div>
   </div>
-</div>
+</section>
 
-<div id="wish" class="wish hidden">
-  <div class="wishbox">
-    <div class="badge">✨ HAPPY BIRTHDAY ✨</div>
-    <div id="wishName" class="name"></div>
-    <div id="wishDate" class="small"></div>
-    <div id="wishMessage" class="message"></div>
-    <div id="wishFrom" class="from"></div>
-    <div class="footer">Made with ♡</div>
-    <button onclick="createAnother()">Create another wish</button>
+<section id="wish" class="wish-page hidden">
+  <div class="wish-card">
+    <div class="wish-content">
+      <div class="envelope"></div>
+      <div class="badge">✨ A LITTLE SURPRISE FOR YOU ✨</div>
+      <div id="wishDate" class="wish-date"></div>
+      <div id="wishName" class="wish-name"></div>
+      <div id="wishMessage" class="wish-message"></div>
+      <div id="wishFrom" class="from"></div>
+      <div id="gallery" class="gallery"></div>
+
+      <div class="actions">
+        <button class="primary" onclick="shareSurprise()">↗ Share Surprise</button>
+        <button class="secondary" onclick="createAnother()">Create Another</button>
+      </div>
+      <div class="footer">Made with love ♡</div>
+    </div>
   </div>
-</div>
-
-<div class="hearts">
-  <span style="left:8%;animation-delay:0s">♡</span>
-  <span style="left:24%;animation-delay:2s">♥</span>
-  <span style="left:45%;animation-delay:4s">♡</span>
-  <span style="left:68%;animation-delay:1s">♥</span>
-  <span style="left:88%;animation-delay:3s">♡</span>
-</div>
+</section>
 
 <script>
-function encode(data){
-  return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+const state={photos:[]};
+
+function enc(obj){
+  return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
 }
-function decode(str){
+function dec(str){
   return JSON.parse(decodeURIComponent(escape(atob(str))));
 }
+function themeValue(){
+  return document.querySelector('input[name="theme"]:checked').value;
+}
+
+document.getElementById('photos').addEventListener('change', async e=>{
+  const files=[...e.target.files].slice(0,3);
+  state.photos=[];
+  const previews=document.getElementById('previews');
+  previews.innerHTML='';
+  for(const file of files){
+    const data=await resizeImage(file);
+    state.photos.push(data);
+    const img=document.createElement('img');
+    img.className='preview'; img.src=data; previews.appendChild(img);
+  }
+});
+
+function resizeImage(file){
+  return new Promise(resolve=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const max=700, scale=Math.min(1,max/Math.max(img.width,img.height));
+        const c=document.createElement('canvas');
+        c.width=Math.round(img.width*scale); c.height=Math.round(img.height*scale);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        resolve(c.toDataURL('image/jpeg',.55));
+      };
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function generateWish(){
   const birthdayName=document.getElementById('birthdayName').value.trim();
   const senderName=document.getElementById('senderName').value.trim();
   const birthdayDate=document.getElementById('birthdayDate').value;
-  const theme=document.getElementById('theme').value;
   const message=document.getElementById('message').value.trim();
-
-  if(!birthdayName || !senderName || !message){
-    alert("Please fill Birthday Person Name, Sender Name and Message.");
+  if(!birthdayName||!senderName||!message){
+    alert('Please fill Name, Your name and Your message 💗');
     return;
   }
-
-  const data={birthdayName,senderName,birthdayDate,theme,message};
-  const link=location.href.split('#')[0]+'#wish='+encode(data);
-  const result=document.getElementById('result');
-  result.style.display='block';
-  result.innerHTML='<b>Your birthday link:</b><br><br><a href="'+link+'">'+link+'</a><br><br><button onclick="navigator.clipboard.writeText(\''+link.replace(/'/g,"\\'")+'\').then(()=>alert(\'Link copied! 💖\'))">Copy Link</button>';
+  const data={birthdayName,senderName,birthdayDate,message,theme:themeValue(),photos:state.photos};
+  const link=location.href.split('#')[0]+'#surprise='+enc(data);
+  document.getElementById('linkText').textContent=link;
+  document.getElementById('result').classList.add('show');
+  history.replaceState(null,'',link);
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'center'});
 }
-function loadWish(){
-  if(!location.hash.startsWith('#wish=')) return;
+
+function copyLink(){
+  const link=document.getElementById('linkText').textContent;
+  navigator.clipboard.writeText(link).then(()=>alert('Link copied! 💗'));
+}
+
+function loadSurprise(){
+  if(!location.hash.startsWith('#surprise=')) return;
   try{
-    const data=decode(location.hash.substring(6));
+    const data=dec(location.hash.slice(10));
     document.getElementById('creator').classList.add('hidden');
     document.getElementById('wish').classList.remove('hidden');
-    document.getElementById('wishName').textContent=data.birthdayName || '';
-    document.getElementById('wishMessage').textContent=data.message || '';
-    document.getElementById('wishFrom').textContent=data.senderName ? '— '+data.senderName+' ♡' : '';
+
+    document.getElementById('wishName').textContent=data.birthdayName||'';
+    document.getElementById('wishMessage').textContent=data.message||'';
+    document.getElementById('wishFrom').textContent=data.senderName?'— '+data.senderName+' ♡':'';
+
     if(data.birthdayDate){
       const d=new Date(data.birthdayDate+'T00:00:00');
-      document.getElementById('wishDate').textContent=d.toLocaleDateString(undefined,{day:'numeric',month:'long'});
+      document.getElementById('wishDate').textContent=d.toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});
     }
-    if(data.theme==='purple') document.body.style.background='linear-gradient(135deg,#090014,#25104d,#0c0520)';
-    if(data.theme==='rose') document.body.style.background='linear-gradient(135deg,#260914,#641c3b,#170817)';
+
+    applyTheme(data.theme||'pink');
+    const gallery=document.getElementById('gallery');
+    gallery.innerHTML='';
+    (data.photos||[]).forEach(src=>{
+      const img=document.createElement('img');img.src=src;gallery.appendChild(img);
+    });
+
+    hearts();
     confetti();
-  }catch(e){ console.error(e); }
-}
-function confetti(){
-  for(let i=0;i<70;i++){
-    const c=document.createElement('div');
-    c.className='confetti';
-    c.style.left=Math.random()*100+'vw';
-    c.style.animationDelay=Math.random()*2+'s';
-    c.style.transform='rotate('+Math.random()*360+'deg)';
-    c.style.background='hsl('+Math.random()*360+',90%,70%)';
-    document.body.appendChild(c);
-    setTimeout(()=>c.remove(),5000);
+  }catch(err){
+    console.error(err);
   }
 }
-function createAnother(){ location.href=location.href.split('#')[0]; }
-loadWish();
+
+function applyTheme(theme){
+  if(theme==='dark'){
+    document.body.style.background='radial-gradient(circle at 15% 10%,rgba(255,92,168,.15),transparent 30%),radial-gradient(circle at 85% 80%,rgba(155,108,255,.16),transparent 30%),linear-gradient(135deg,#130a18,#211126,#0e0913)';
+    document.querySelector('.wish-card').style.background='rgba(31,20,37,.90)';
+    document.querySelector('.wish-card').style.color='#fff';
+    document.querySelector('.wish-message').style.color='#f0dce9';
+    document.querySelector('.wish-date').style.color='#d2a8c1';
+    document.querySelector('.from').style.color='#cba2bb';
+  }else if(theme==='purple'){
+    document.body.style.background='radial-gradient(circle at 10% 10%,rgba(155,108,255,.25),transparent 30%),radial-gradient(circle at 90% 20%,rgba(255,115,191,.18),transparent 30%),linear-gradient(135deg,#f6f1ff,#eee8ff,#fff7fc)';
+  }
+}
+
+function shareSurprise(){
+  if(navigator.share){
+    navigator.share({title:'A birthday surprise 💗',url:location.href});
+  }else{
+    navigator.clipboard.writeText(location.href).then(()=>alert('Surprise link copied! 💗'));
+  }
+}
+function createAnother(){
+  location.href=location.href.split('#')[0];
+}
+function hearts(){
+  for(let i=0;i<14;i++){
+    const h=document.createElement('div');h.className='float-heart';
+    h.textContent=['♡','♥','💗','✨'][Math.floor(Math.random()*4)];
+    h.style.left=Math.random()*100+'vw';
+    h.style.animationDuration=(6+Math.random()*6)+'s';
+    h.style.animationDelay=(Math.random()*5)+'s';
+    h.style.fontSize=(14+Math.random()*18)+'px';
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),13000);
+  }
+}
+function confetti(){
+  for(let i=0;i<75;i++){
+    const c=document.createElement('div');c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.animationDelay=Math.random()*1.8+'s';
+    c.style.transform='rotate('+Math.random()*360+'deg)';
+    c.style.background='hsl('+Math.random()*360+',85%,68%)';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5200);
+  }
+}
+loadSurprise();
 </script>
 </body>
-</html>
+</html>'''
+
+path = Path("/mnt/data/premium_birthday_wish_maker.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created: {path}")
